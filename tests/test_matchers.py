@@ -177,3 +177,20 @@ def test_extract_keypoints(model_name, device, test_image_paths):
         assert result["all_kpts0"].shape[1] == 2
 
     del matcher
+
+
+@pytest.mark.parametrize("model_name", available_models)
+def test_max_num_keypoints(model_name, device, test_image_paths):
+    """Every matcher returns at most max_num_keypoints keypoints per image."""
+    img0_path, img1_path = test_image_paths
+    try:
+        matcher = get_matcher(model_name, device=device, max_num_keypoints=100)
+    except Exception as e:
+        pytest.skip(f"Cannot instantiate {model_name} on {device}: {e}")
+
+    result = matcher.forward(matcher.load_image(img0_path, resize=256), matcher.load_image(img1_path, resize=256))
+
+    assert len(result["all_kpts0"]) <= 100
+    assert len(result["all_kpts1"]) <= 100
+
+    del matcher

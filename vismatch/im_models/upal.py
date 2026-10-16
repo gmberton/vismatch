@@ -1,29 +1,22 @@
-from pathlib import Path
+from huggingface_hub import hf_hub_download
+from safetensors.torch import load_file
 
 from vismatch import BaseMatcher, THIRD_PARTY_DIR
 from vismatch.utils import add_to_path
 
 add_to_path(THIRD_PARTY_DIR / "UPAL")
-from upal import load_model
+from upal import UPAL
 from upal.postprocess import mutual_nearest_neighbors
-from huggingface_hub import snapshot_download
 
 
 class UPALMatcher(BaseMatcher):
     def __init__(self, device="cpu", max_num_keypoints=1024, weights_path=None, *args, **kwargs):
         super().__init__(device, **kwargs)
-
         if weights_path is None:
-            weights_path = Path(snapshot_download("vismatch/upal")) / "upal.tar"
-        weights_path = Path(weights_path)
-        if not weights_path.is_file():
-            raise FileNotFoundError(f"UPAL weights not found: {weights_path}")
-
-        self.model = load_model(
-            weights_path,
-            device=self.device,
-            max_num_keypoints=max_num_keypoints,
-        ).eval()
+            weights_path = hf_hub_download("vismatch/upal", "model.safetensors")
+        self.model = UPAL(max_num_keypoints=max_num_keypoints)
+        self.model.load_state_dict(load_file(weights_path))
+        self.model = self.model.to(self.device).eval()
 
     def _forward(self, img0, img1):
         output0 = self.model(img0.unsqueeze(0))

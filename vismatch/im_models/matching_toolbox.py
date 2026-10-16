@@ -26,6 +26,7 @@ from vismatch import THIRD_PARTY_DIR, BaseMatcher
 BASE_PATH = THIRD_PARTY_DIR.joinpath("imatch-toolbox")
 add_to_path(BASE_PATH)
 import immatch
+from third_party.d2net.lib.pyramid import process_multiscale
 
 
 @contextmanager
@@ -203,8 +204,9 @@ class R2D2Matcher(BaseMatcher):
 
 
 class D2netMatcher(BaseMatcher):
-    def __init__(self, device="cpu", *args, **kwargs):
+    def __init__(self, device="cpu", max_num_keypoints=2048, *args, **kwargs):
         super().__init__(device, **kwargs)
+        self.max_num_keypoints = max_num_keypoints
 
         with open(BASE_PATH.joinpath("configs/d2net.yml"), "r") as f:
             args = yaml.load(f, Loader=yaml.FullLoader)["sat"]
@@ -226,12 +228,19 @@ class D2netMatcher(BaseMatcher):
 
         return image
 
+    def extract_features(self, img):
+        # Same as immatch's D2Net.extract_features, but keeps only the max_num_keypoints highest-scoring keypoints
+        image = torch.tensor(img[np.newaxis].astype(np.float32), device=self.model.device)
+        keypoints, scores, descriptors = process_multiscale(image, self.model.model)
+        top = np.argsort(-scores)[: self.max_num_keypoints]
+        return keypoints[top][:, [1, 0]], descriptors[top]
+
     def _forward(self, img0, img1):
         img0 = self.preprocess(img0)
         img1 = self.preprocess(img1)
 
-        kpts0, desc0 = self.model.extract_features(img0)
-        kpts1, desc1 = self.model.extract_features(img1)
+        kpts0, desc0 = self.extract_features(img0)
+        kpts1, desc1 = self.extract_features(img1)
 
         match_ids, scores = self.model.mutual_nn_match(desc0, desc1, threshold=self.match_threshold)
         mkpts0 = kpts0[match_ids[:, 0], :2]

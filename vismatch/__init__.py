@@ -341,7 +341,7 @@ def get_matcher(
     elif matcher_name == "d2net":
         from vismatch.im_models import matching_toolbox
 
-        return matching_toolbox.D2netMatcher(device, *args, **kwargs)
+        return matching_toolbox.D2netMatcher(device, max_num_keypoints, *args, **kwargs)
 
     elif matcher_name == "duster":
         from vismatch.im_models import duster
@@ -474,7 +474,7 @@ def get_matcher(
     elif matcher_name == "rdd-star":
         from vismatch.im_models import rdd
 
-        return rdd.RDDMatcher(device, mode="dense", *args, **kwargs)
+        return rdd.RDDMatcher(device, mode="dense", max_num_keypoints=max_num_keypoints, *args, **kwargs)
 
     elif matcher_name == "rdd-lightglue":
         from vismatch.im_models import rdd
