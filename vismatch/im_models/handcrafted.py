@@ -34,6 +34,9 @@ class HandcraftedBaseMatcher(BaseMatcher):
         # find the keypoints and descriptors with SIFT
         kp0, des0 = self.det_descr.detectAndCompute(img0, None)
         kp1, des1 = self.det_descr.detectAndCompute(img1, None)
+        # OpenCV also keeps the keypoints tied with the last retained one, so SIFT can return a few more than asked
+        kp0, des0 = kp0[: self.max_num_keypoints], des0[: self.max_num_keypoints]
+        kp1, des1 = kp1[: self.max_num_keypoints], des1[: self.max_num_keypoints]
 
         # BFMatcher with default params
 
@@ -66,6 +69,7 @@ class SiftNNMatcher(HandcraftedBaseMatcher):
     def __init__(self, device="cpu", max_num_keypoints=2048, lowe_thresh=0.75, *args, **kwargs):
         super().__init__(device, **kwargs)
         self.threshold = lowe_thresh
+        self.max_num_keypoints = max_num_keypoints
         self.det_descr = cv2.SIFT_create(max_num_keypoints)
 
         self.bf = cv2.BFMatcher()
@@ -76,6 +80,7 @@ class OrbNNMatcher(HandcraftedBaseMatcher):
     def __init__(self, device="cpu", max_num_keypoints=2048, lowe_thresh=0.75, *args, **kwargs):
         super().__init__(device, **kwargs)
         self.threshold = lowe_thresh
+        self.max_num_keypoints = max_num_keypoints
         self.det_descr = cv2.ORB_create(max_num_keypoints)
         self.bf = cv2.BFMatcher(cv2.NORM_HAMMING)
         self.k_neighbors = 2
