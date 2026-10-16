@@ -28,6 +28,7 @@ except PackageNotFoundError:
     pass
 
 available_models = [
+    "dad",
     "upal",
     "liftfeat",
     "loftr",
@@ -181,6 +182,11 @@ def get_matcher(
         return keypt2subpx.Keypt2SubpxMatcher(
             device, max_num_keypoints=max_num_keypoints, detector_name="aliked-lightglue", *args, **kwargs
         )
+
+    elif matcher_name == "dad":
+        from vismatch.im_models import dad
+
+        return dad.DaDMatcher(device, max_num_keypoints, *args, **kwargs)
 
     elif matcher_name == "upal":
         from vismatch.im_models import upal

@@ -106,6 +106,9 @@
 [submodule "vismatch/third_party/REDI-Match"]
 	path = vismatch/third_party/REDI-Match
 	url = https://github.com/YinjiGe/REDI-Match
+[submodule "vismatch/third_party/dad"]
+	path = vismatch/third_party/dad
+	url = https://github.com/Parskatt/dad
 [submodule "vismatch/third_party/CLIDD"]
 	path = vismatch/third_party/CLIDD
 	url = https://github.com/HITCSC/CLIDD
