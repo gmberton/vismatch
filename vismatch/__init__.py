@@ -28,7 +28,7 @@ except PackageNotFoundError:
     pass
 
 available_models = [
-    "dad",
+    "dad-roma",
     "upal",
     "liftfeat",
     "loftr",
@@ -183,7 +183,7 @@ def get_matcher(
             device, max_num_keypoints=max_num_keypoints, detector_name="aliked-lightglue", *args, **kwargs
         )
 
-    elif matcher_name == "dad":
+    elif matcher_name == "dad-roma":
         from vismatch.im_models import dad
 
         return dad.DaDMatcher(device, max_num_keypoints, *args, **kwargs)

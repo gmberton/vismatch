@@ -55,7 +55,7 @@ class DaDMatcher(BaseMatcher):
         weights = torch.hub.load_state_dict_from_url(
             "https://github.com/Parskatt/dad/releases/download/v0.1.0/dad.pth",
             map_location="cpu",
-            weights_only=False,
+            weights_only=True,
         )
         self.detector.load_state_dict(weights)
         self.detector.eval().to(self.device)
