@@ -71,6 +71,13 @@ Most models can run on both CPU and GPU. If a runtime shows ❌, that model cann
       <td></td>
       <td></td>
     </tr>
+    <tr>
+      <td>DaD (arXiv '25)</td>
+      <td><a href="https://github.com/Parskatt/dad">Official</a></td>
+      <td><a href="https://arxiv.org/abs/2503.07347">arxiv</a></td>
+      <td>0.437</td>
+      <td>13.724</td>
+    </tr>
       <tr>
       <td>UFM (NeurIPS '25)</td>
       <td><a href="https://github.com/UniFlowMatch/UFM">Official</a></td>

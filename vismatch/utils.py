@@ -40,9 +40,9 @@ def patch_sample_keypoints_device(*modules) -> None:
             continue
 
         @functools.wraps(func)
-        def wrapper(scoremap, *args, _func=func, **kwargs):
-            kwargs.setdefault("device", scoremap.device)
-            return _func(scoremap, *args, **kwargs)
+        def wrapper(_input, *args, _func=func, **kwargs):
+            kwargs.setdefault("device", _input.device)
+            return _func(_input, *args, **kwargs)
 
         wrapper._device_follows_input = True
         module.sample_keypoints = wrapper
