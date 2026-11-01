@@ -487,5 +487,9 @@ def to_tensor_image(img):
     assert img.ndim == 3 and img.shape[0] == 3, f"img should have shape (3, H, W), got {img.shape}"
     # Small tolerance of 0.2 because images after bicubic resizing can slightly exceed the [0, 1] range
     # This is expected, not a bug, see https://github.com/opencv/opencv/issues/7195
+    if img.is_floating_point() and img.numel():
+        lo, hi = img.aminmax()  # single reduction; failures fall through to the assert below
+        if -0.2 <= float(lo) and float(hi) <= 1.2:
+            return img
     assert -0.2 <= img.min() and img.max() <= 1.2, f"img should be in [0, 1], got [{img.min()}, {img.max()}]"
     return img
