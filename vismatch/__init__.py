@@ -106,6 +106,10 @@ available_models = [
     "loma-r",
     "clidd-a48",
     "clidd-u128",
+    "flexglue",
+    "raco-flexglue",
+    "sandesc",
+    "sandesc-dedode",
 ]
 
 
@@ -554,6 +558,26 @@ def get_matcher(
         from vismatch.im_models import clidd
 
         return clidd.CLIDDMatcher(device, max_num_keypoints, variant="U128", *args, **kwargs)
+
+    elif matcher_name == "flexglue":
+        from vismatch.im_models import flexglue
+
+        return flexglue.FlexGlueMatcher(device, max_num_keypoints, *args, **kwargs)
+
+    elif matcher_name == "raco-flexglue":
+        from vismatch.im_models import flexglue
+
+        return flexglue.FlexGlueMatcher(device, max_num_keypoints, detector="raco", *args, **kwargs)
+
+    elif matcher_name == "sandesc":
+        from vismatch.im_models import sandesc
+
+        return sandesc.SANDescMatcher(device, max_num_keypoints, *args, **kwargs)
+
+    elif matcher_name == "sandesc-dedode":
+        from vismatch.im_models import sandesc
+
+        return sandesc.SANDescMatcher(device, max_num_keypoints, detector="dedode", *args, **kwargs)
 
     else:
         raise RuntimeError(

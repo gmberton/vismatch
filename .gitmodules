@@ -112,3 +112,9 @@
 [submodule "vismatch/third_party/CLIDD"]
 	path = vismatch/third_party/CLIDD
 	url = https://github.com/HITCSC/CLIDD
+[submodule "vismatch/third_party/FlexGlue"]
+	path = vismatch/third_party/FlexGlue
+	url = https://github.com/cvg/FlexGlue
+[submodule "vismatch/third_party/SANDesc"]
+	path = vismatch/third_party/SANDesc
+	url = https://github.com/mattiadurso/SANDesc

@@ -176,11 +176,11 @@ python vismatch_extract.py -h
 ## Available Models
 We support the following methods:
 
-**Dense**: ```roma, tiny-roma, duster, master, minima-roma, ufm, redimatch[-indoor]```
+**Dense**: ```roma, tiny-roma, duster, master, minima-roma, ufm, redimatch[-indoor], flexglue```
 
 **Semi-dense**: ```loftr, eloftr, se2loftr, xoftr, minima-loftr, aspanformer, matchformer, xfeat-star, xfeat-star-steerers[-perm/-learned], edm, rdd-star, topicfm[-plus]```
 
-**Sparse**: ```[sift, superpoint, disk, aliked, dedode, doghardnet, gim, xfeat, raco]-lightglue, dedode, steerers, affine-steerers, xfeat-steerers[-perm/learned], dedode-kornia, [sift, orb, doghardnet]-nn, patch2pix, superglue, r2d2, d2net,  gim-dkm, xfeat, omniglue, [dedode, xfeat, aliked]-subpx, [sift, superpoint]-sphereglue, minima-superpoint-lightglue, liftfeat, rdd-[sparse,lightglue, aliked], ripe, lisrd, zippypoint, loma, loma-r, upal, clidd-[a48/u128], dad-roma```
+**Sparse**: ```[sift, superpoint, disk, aliked, dedode, doghardnet, gim, xfeat, raco]-lightglue, dedode, steerers, affine-steerers, xfeat-steerers[-perm/learned], dedode-kornia, [sift, orb, doghardnet]-nn, patch2pix, superglue, r2d2, d2net,  gim-dkm, xfeat, omniglue, [dedode, xfeat, aliked]-subpx, [sift, superpoint]-sphereglue, minima-superpoint-lightglue, liftfeat, rdd-[sparse,lightglue, aliked], ripe, lisrd, zippypoint, loma, loma-r, upal, clidd-[a48/u128], dad-roma, raco-flexglue, sandesc[-dedode]```
 
 See [Model Details](https://github.com/gmberton/vismatch/blob/main/docs/source/model_details.md) to see runtimes, supported devices, source, and license of each model.
 
