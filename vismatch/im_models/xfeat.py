@@ -29,8 +29,9 @@ class xFeatMatcher(BaseMatcher):
 
         if self.mode == "semi-dense":
             # the steps of XFeat.match_xfeat_star, keeping the dense features it does not return
-            feats0 = self.model.detectAndComputeDense(img0)
-            feats1 = self.model.detectAndComputeDense(img1)
+            # _detect_dense, not detectAndComputeDense: _refine_matches also reads the "cell_scales" it returns
+            feats0 = self.model._detect_dense(img0, self.max_num_keypoints, multiscale=True)
+            feats1 = self.model._detect_dense(img1, self.max_num_keypoints, multiscale=True)
             idxs = self.model._batch_match(feats0["descriptors"], feats1["descriptors"])
             matches = self.model._refine_matches(feats0, feats1, matches=idxs, batch_idx=0)
             mkpts0, mkpts1 = matches[:, :2], matches[:, 2:]

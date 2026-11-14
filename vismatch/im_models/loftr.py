@@ -14,6 +14,8 @@ class LoftrMatcher(BaseMatcher):
             hf_hub_download("kornia/loftr", "loftr_outdoor.ckpt"), map_location="cpu", weights_only=True
         )
         self.model.load_state_dict(weights["state_dict"])
+        # kornia >= 0.9 builds LoFTR(pretrained=None) in training mode, where coarse matching needs ground truth
+        self.model = self.model.eval()
 
     def preprocess(self, img):
         return tfm.Grayscale()(img).unsqueeze(0).to(self.device)
