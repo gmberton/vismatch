@@ -1,9 +1,8 @@
 from kornia.feature import DeDoDe, LightGlue
 import torch
-import kornia
 from huggingface_hub import hf_hub_download
 
-from vismatch import get_version, BaseMatcher
+from vismatch import BaseMatcher
 
 
 class DeDoDeLightGlue(BaseMatcher):
@@ -20,11 +19,6 @@ class DeDoDeLightGlue(BaseMatcher):
     ):
         super().__init__(device, **kwargs)
         self.max_num_keypoints = max_num_keypoints
-
-        major, minor, patch = get_version(kornia)
-        assert major > 1 or (minor > 7 or (minor == 7 and patch >= 3)), (
-            "DeDoDe-LG only available in kornia v 0.7.3 or greater. Update kornia to use this model."
-        )
 
         assert detector_weights in DeDoDeLightGlue.detector_options, (
             f"Invalid detector weights passed ({detector_weights}). Choose from {DeDoDeLightGlue.detector_options}"

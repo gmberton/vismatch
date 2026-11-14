@@ -1,9 +1,9 @@
 # usage: pip install -r requirements.txt
-torch>=2.0
+torch>=2.5.1
 torchvision>=0.15
 opencv-python>=4.5.4
 matplotlib>=3.3
-kornia>=0.7.3,<0.8.3  # 0.8.3 removed kornia.utils.grid, used by LoFTR and others
+kornia>=0.9.1
 einops>=0.6.0
 transforms3d>=0.4.0
 kornia_moons>=0.1

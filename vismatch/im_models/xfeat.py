@@ -1,82 +1,57 @@
-from torch import Tensor
+import torch
+import kornia.feature as KF
 from huggingface_hub import snapshot_download
-from kornia.feature.lightglue import LightGlue
 
-from vismatch import BaseMatcher, THIRD_PARTY_DIR
-from vismatch.utils import add_to_path
-
-add_to_path(THIRD_PARTY_DIR.joinpath("accelerated_features"))
-from modules.xfeat import XFeat
-from modules.lighterglue import LighterGlue
+from vismatch import BaseMatcher
 
 
 class xFeatMatcher(BaseMatcher):
+    """XFeat from kornia: sparse (mutual nearest neighbours), semi-dense (XFeat*) or LighterGlue matching."""
+
     def __init__(self, device="cpu", max_num_keypoints=4096, mode="sparse", *args, **kwargs):
         super().__init__(device, **kwargs)
-        assert mode in ["sparse", "semi-dense", "lighterglue"]
-
-        self.model_path = f"{snapshot_download('vismatch/xfeat')}/xfeat.pt"
-
-        self.model = XFeat(weights=self.model_path)
-        self.model.net = self.model.net.to(device)
-        self.model.dev = device
-
+        assert mode in ["sparse", "semi-dense", "lighterglue"], (
+            f'unsupported mode for xfeat: {mode}. Must choose from ["sparse", "semi-dense", "lighterglue"]'
+        )
         self.max_num_keypoints = max_num_keypoints
         self.mode = mode
 
-        if self.mode == "lighterglue":
-            # LighterGlue ignores the device we pass and moves itself to cuda-if-available; put it on self.device.
-            # Its init also overwrites kornia's LightGlue.default_conf globally, breaking other LightGlue-based
-            # matchers (e.g. dedode-lightglue), so restore the original conf afterwards.
-            default_conf = LightGlue.default_conf
-            self.model.lighterglue = LighterGlue().to(self.device)
-            LightGlue.default_conf = default_conf
+        self.model = KF.XFeat(top_k=max_num_keypoints)
+        weights = torch.load(f"{snapshot_download('vismatch/xfeat')}/xfeat.pt", map_location="cpu", weights_only=True)
+        self.model.net.load_state_dict(weights)
+        self.model = self.model.eval().to(self.device)
 
-    def preprocess(self, img: Tensor) -> Tensor:
-        # return a [B, C, Hs, W] tensor
-        # for sparse/semidense, want [C, H, W]
-        while img.ndim < 4:
-            img = img.unsqueeze(0)
-        return self.model.parse_input(img)
+        if self.mode == "lighterglue":
+            self.lighterglue = KF.LightGlueMatcher("xfeat").eval().to(self.device)
 
     def _forward(self, img0, img1):
-        img0, img1 = self.preprocess(img0), self.preprocess(img1)
+        img0, img1 = img0[None], img1[None]
 
         if self.mode == "semi-dense":
-            output0 = self.model.detectAndComputeDense(img0, top_k=self.max_num_keypoints)
-            output1 = self.model.detectAndComputeDense(img1, top_k=self.max_num_keypoints)
-            idxs_list = self.model.batch_match(output0["descriptors"], output1["descriptors"])
-            batch_size = len(img0)
-            matches = []
-            for batch_idx in range(batch_size):
-                matches.append(self.model.refine_matches(output0, output1, matches=idxs_list, batch_idx=batch_idx))
+            # the steps of XFeat.match_xfeat_star, keeping the dense features it does not return
+            feats0 = self.model.detectAndComputeDense(img0)
+            feats1 = self.model.detectAndComputeDense(img1)
+            idxs = self.model._batch_match(feats0["descriptors"], feats1["descriptors"])
+            matches = self.model._refine_matches(feats0, feats1, matches=idxs, batch_idx=0)
+            mkpts0, mkpts1 = matches[:, :2], matches[:, 2:]
+            kpts0, kpts1 = feats0["keypoints"][0], feats1["keypoints"][0]
+            desc0, desc1 = feats0["descriptors"][0], feats1["descriptors"][0]
+            return mkpts0, mkpts1, kpts0, kpts1, desc0, desc1, None
 
-            mkpts0, mkpts1 = matches if batch_size > 1 else (matches[0][:, :2], matches[0][:, 2:])
+        feats0 = self.model.detectAndCompute(img0)[0]
+        feats1 = self.model.detectAndCompute(img1)[0]
+        kpts0, kpts1 = feats0["keypoints"], feats1["keypoints"]
+        desc0, desc1 = feats0["descriptors"], feats1["descriptors"]
 
-        elif self.mode in ["sparse", "lighterglue"]:
-            output0 = self.model.detectAndCompute(img0, top_k=self.max_num_keypoints)[0]
-            output1 = self.model.detectAndCompute(img1, top_k=self.max_num_keypoints)[0]
+        if self.mode == "lighterglue":
+            lafs0 = KF.laf_from_center_scale_ori(kpts0[None])
+            lafs1 = KF.laf_from_center_scale_ori(kpts1[None])
+            scores, idxs = self.lighterglue(
+                desc0, desc1, lafs0, lafs1, hw1=tuple(img0.shape[-2:]), hw2=tuple(img1.shape[-2:])
+            )
+            mconf = scores[:, 0]
+        else:  # sparse
+            _, idxs = KF.match_mnn(desc0, desc1)
+            mconf = None
 
-            if self.mode == "lighterglue":
-                # Update with image resolution in (W, H) order (required)
-                output0.update({"image_size": (img0.shape[-1], img0.shape[-2])})
-                output1.update({"image_size": (img1.shape[-1], img1.shape[-2])})
-
-                # match_lighterglue returns 2 or 3 values across accelerated_features versions; the 3rd is
-                # match indices (not confidence), so keep only the keypoints.
-                mkpts0, mkpts1 = self.model.match_lighterglue(output0, output1)[:2]
-            else:  # sparse
-                idxs0, idxs1 = self.model.match(output0["descriptors"], output1["descriptors"], min_cossim=-1)
-                mkpts0, mkpts1 = output0["keypoints"][idxs0], output1["keypoints"][idxs1]
-        else:
-            raise ValueError(f'unsupported mode for xfeat: {self.mode}. Must choose from ["sparse", "semi-dense"]')
-
-        return (
-            mkpts0,
-            mkpts1,
-            output0["keypoints"].squeeze(),
-            output1["keypoints"].squeeze(),
-            output0["descriptors"].squeeze(),
-            output1["descriptors"].squeeze(),
-            None,  # matched_confidences
-        )
+        return kpts0[idxs[:, 0]], kpts1[idxs[:, 1]], kpts0, kpts1, desc0, desc1, mconf

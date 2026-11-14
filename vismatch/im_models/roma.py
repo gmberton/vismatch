@@ -1,7 +1,7 @@
 import torch
 import torchvision.transforms as tfm
 from kornia.augmentation import PadTo
-from kornia.utils import tensor_to_image
+from kornia.image import tensor_to_image
 import tempfile
 from pathlib import Path
 
