@@ -12,7 +12,6 @@ import vismatch  # noqa: F401 - installs vismatch.kornia_compat
     ("module", "name", "expected"),
     [
         ("kornia.utils.grid", "create_meshgrid", "kornia.geometry.create_meshgrid"),
-        ("kornia.utils.helpers", "get_cuda_device_if_available", "kornia.core.utils.get_cuda_device_if_available"),
         ("kornia.core", "Module", "torch.nn.Module"),
         ("kornia.core", "Tensor", "torch.Tensor"),
         ("kornia", "rgb_to_grayscale", "kornia.color.rgb_to_grayscale"),

@@ -188,7 +188,7 @@ Most models can run on both CPU and GPU. If a runtime shows ❌, that model cann
     </tr>
     <tr>
       <td>xFeat (CVPR '24)</td>
-      <td><a href="https://github.com/verlab/accelerated_features">Official</a> / <a href="https://kornia.readthedocs.io/en/stable/feature.html#kornia.feature.XFeat">Kornia</a></td>
+      <td><a href="https://github.com/verlab/accelerated_features">Official</a></td>
       <td><a href="https://arxiv.org/abs/2404.19174">arxiv</a></td>
       <td>0.027</td>
       <td>0.048</td>
@@ -254,7 +254,7 @@ Most models can run on both CPU and GPU. If a runtime shows ❌, that model cann
     </tr>
     <tr>
       <td>LightGlue* (ICCV '23)</td>
-      <td><a href="https://github.com/cvg/LightGlue">Official</a> / <a href="https://kornia.readthedocs.io/en/stable/feature.html#kornia.feature.LightGlue">Kornia</a></td>
+      <td><a href="https://github.com/cvg/LightGlue">Official</a></td>
       <td><a href="https://arxiv.org/abs/2306.13643">arxiv</a></td>
       <td>0.417 / 0.093 / 0.184 / 0.128</td>
       <td>2.828 / 8.852 / 8.100 / 8.128</td>
@@ -364,7 +364,7 @@ Most models can run on both CPU and GPU. If a runtime shows ❌, that model cann
 
 
 \
-Our implementation of Patch2Pix (+ Patch2PixSuperGlue), R2D2, and D2Net are based on the [Image Matching Toolbox](https://github.com/GrumpyZhou/image-matching-toolbox/tree/main) (IMT). LoFTR, DeDoDe-Lightglue, xFeat (sparse, semi-dense and LighterGlue), DISK-LightGlue and ALIKED-LightGlue are from [Kornia](https://github.com/kornia/kornia); SuperPoint-, SIFT- and DoGHardNet-LightGlue use the official LightGlue implementation, whose SIFT detector is OpenCV's. Other models are based on the offical repos above.
+Our implementation of Patch2Pix (+ Patch2PixSuperGlue), R2D2, and D2Net are based on the [Image Matching Toolbox](https://github.com/GrumpyZhou/image-matching-toolbox/tree/main) (IMT). LoFTR and DeDoDe-Lightglue are from [Kornia](https://github.com/kornia/kornia). Other models are based on the offical repos above.
 
 Runtime benchmark is the average of 5 iterations over the 5 pairs of examples in the `assets/example_pairs` folder at image size 512x512. Benchmark is done using `vismatch_test.py` on an NVIDIA RTX A4000 GPU. Results rounded to the hundredths place.
 
