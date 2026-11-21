@@ -2,10 +2,9 @@ import torch
 import torchvision.transforms as tfm
 from kornia.feature import DeDoDe
 from safetensors.torch import load_file
-import kornia
 
 from huggingface_hub import snapshot_download
-from vismatch import get_version, THIRD_PARTY_DIR, BaseMatcher
+from vismatch import THIRD_PARTY_DIR, BaseMatcher
 from vismatch.utils import (
     add_to_path,
     resize_to_divisible,
@@ -113,11 +112,6 @@ class DedodeKorniaMatcher(BaseMatcher):
         **kwargs,
     ):
         super().__init__(device, **kwargs)
-
-        major, minor, patch = get_version(kornia)
-        assert major > 1 or (minor > 7 or (minor == 7 and patch >= 3)), (
-            "DeDoDeKornia only available in kornia v 0.7.3 or greater. Update kornia to use this model."
-        )
 
         self.max_keypoints = max_num_keypoints
 

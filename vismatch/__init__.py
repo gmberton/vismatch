@@ -15,6 +15,7 @@ from huggingface_hub import snapshot_download
 from huggingface_hub.utils import disable_progress_bars
 from .utils import add_to_path, get_default_device, route_linalg_inv_through_cpu  # noqa: F401 - for quick import later 'from vismatch import get_default_device'
 from .base_matcher import BaseMatcher  # noqa: F401 - for quick import later 'from vismatch import BaseMatcher'
+from . import kornia_compat  # noqa: F401 - restores kornia names the third-party submodules still import
 
 THIRD_PARTY_DIR = Path(__file__).parent.joinpath("third_party")  # exported for use by matcher modules
 

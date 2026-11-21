@@ -10,7 +10,7 @@ import tarfile
 from functools import partial
 import zipfile
 from pathlib import Path
-from kornia import tensor_to_image
+from kornia.image import tensor_to_image
 import torch
 import numpy as np
 from skimage.util import img_as_ubyte

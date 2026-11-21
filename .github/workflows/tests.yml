@@ -15,7 +15,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install ruff
         run: pip install ruff
       - name: Ruff check
@@ -32,7 +32,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Free disk space
         uses: jlumbroso/free-disk-space@main
         with:

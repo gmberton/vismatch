@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from PIL import Image
-from kornia.utils import tensor_to_image
+from kornia.image import tensor_to_image
 from vismatch.utils import to_numpy, to_tensor_image
 from pathlib import Path
 
